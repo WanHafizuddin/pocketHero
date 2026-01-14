@@ -23,11 +23,13 @@ import {
   Camera,
   Gift,
   HeartPulse,
-  Gamepad2
+  Gamepad2,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
-const chartData = [
+const weeklyChartData = [
   { name: 'Mon', amount: 45 },
   { name: 'Tue', amount: 52 },
   { name: 'Wed', amount: 38 },
@@ -35,6 +37,15 @@ const chartData = [
   { name: 'Fri', amount: 48 },
   { name: 'Sat', amount: 70 },
   { name: 'Sun', amount: 42 },
+];
+
+const monthlyChartData = [
+  { name: 'Jan', amount: 1250 },
+  { name: 'Feb', amount: 1180 },
+  { name: 'Mar', amount: 1420 },
+  { name: 'Apr', amount: 1350 },
+  { name: 'May', amount: 1580 },
+  { name: 'Jun', amount: 1650 },
 ];
 
 const pieData = [
@@ -145,6 +156,86 @@ function App() {
                       <div style={{ fontSize: '15px', fontWeight: 700 }}>RM 1,850</div>
                     </div>
                   </div>
+                </div>
+              </motion.div>
+
+              {/* Smart AI Insights Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  background: 'white',
+                  padding: '20px',
+                  borderRadius: '28px',
+                  border: '1px solid #f1f5f9',
+                  marginBottom: '24px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)'
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: '-15px',
+                  right: '-15px',
+                  width: '60px',
+                  height: '60px',
+                  background: 'rgba(168, 85, 247, 0.05)',
+                  borderRadius: '50%'
+                }} />
+
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <div className="ai-gradient ai-pulse" style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: 'white',
+                    boxShadow: '0 8px 16px -4px rgba(168, 85, 247, 0.4)'
+                  }}>
+                    <Sparkles size={24} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Smart Analysis</span>
+                      <motion.div
+                        animate={{ opacity: [1, 0.5, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#a855f7' }}
+                      />
+                    </div>
+                    <div style={{ fontSize: '15px', fontWeight: 700, marginTop: '2px' }}>Personal Budget Tip</div>
+                    <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px', lineHeight: '1.4' }}>
+                      I noticed you're spending more on <span style={{ fontWeight: 700, color: 'var(--primary)' }}>Dining Out</span> this week. Maybe try cooking at home to save RM120?
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
+                  <button style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '12px',
+                    border: '1px solid #f1f5f9',
+                    background: '#f8fafc',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}>Dismiss</button>
+                  <button style={{
+                    flex: 2,
+                    padding: '10px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: 'var(--primary)',
+                    color: 'white',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.2)'
+                  }}>View Full Analysis</button>
                 </div>
               </motion.div>
 
@@ -332,7 +423,7 @@ function App() {
                 </div>
                 <div style={{ width: '100%', height: '220px' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
+                    <BarChart data={statsType === 'weekly' ? weeklyChartData : monthlyChartData}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 500 }} />
                       <Tooltip
@@ -340,8 +431,8 @@ function App() {
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '12px' }}
                       />
                       <Bar dataKey="amount" radius={[8, 8, 8, 8]} barSize={24}>
-                        {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={index === 5 ? 'var(--primary)' : 'var(--indigo-soft)'} />
+                        {(statsType === 'weekly' ? weeklyChartData : monthlyChartData).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={index === (statsType === 'weekly' ? 5 : 5) ? 'var(--primary)' : 'var(--indigo-soft)'} />
                         ))}
                       </Bar>
                     </BarChart>
@@ -626,47 +717,98 @@ function App() {
               <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px auto' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Add Expense</h2>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setIsScanning(true);
-                    setTimeout(() => setIsScanning(false), 2000);
+                    setTimeout(() => setIsScanning(false), 3000);
                   }}
+                  className="ai-pulse"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '8px 16px',
-                    borderRadius: '12px',
-                    background: 'var(--indigo-soft)',
-                    color: 'var(--primary)',
+                    padding: '10px 18px',
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                    color: 'white',
                     border: 'none',
-                    fontWeight: 600,
+                    fontWeight: 800,
                     fontSize: '13px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 16px -4px rgba(168, 85, 247, 0.3)'
                   }}
                 >
-                  <Scan size={18} /> {isScanning ? 'Scanning...' : 'Scan Receipt'}
-                </button>
+                  <Scan size={18} /> {isScanning ? 'AI Extracting...' : 'AI Scan Receipt'}
+                </motion.button>
               </div>
 
               {isScanning && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   style={{
-                    marginBottom: '24px',
-                    padding: '24px',
-                    borderRadius: '20px',
-                    background: '#f8fafc',
-                    border: '2px dashed var(--primary)',
+                    position: 'relative',
+                    marginBottom: '28px',
+                    height: '180px',
+                    borderRadius: '24px',
+                    background: '#1e293b',
+                    overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '12px'
+                    justifyContent: 'center',
+                    border: '2px solid rgba(168, 85, 247, 0.3)'
                   }}
                 >
-                  <Camera size={32} className="animate-pulse" style={{ color: 'var(--primary)' }} />
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary)' }}>Analyzing Receipt...</div>
+                  <div className="laser-line" />
+
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    style={{ color: 'rgba(255,255,255,0.2)' }}
+                  >
+                    <Camera size={48} />
+                  </motion.div>
+
+                  <div style={{
+                    marginTop: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: 'white', letterSpacing: '0.05em' }}>AI SCANNING...</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {[1, 2, 3].map(i => (
+                        <motion.div
+                          key={i}
+                          animate={{ opacity: [0, 1, 0] }}
+                          transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.2 }}
+                          style={{ fontSize: '10px', color: '#a855f7', fontWeight: 900 }}
+                        >•</motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Simulated text fragments */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
+                    style={{ position: 'absolute', top: '20%', left: '10%', fontSize: '10px', color: '#10b981', fontFamily: 'monospace' }}
+                  >
+                    TOTAL: RM 45.00
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 1.2, repeat: Infinity, delay: 0.8 }}
+                    style={{ position: 'absolute', bottom: '30%', right: '15%', fontSize: '10px', color: '#10b981', fontFamily: 'monospace' }}
+                  >
+                    DATE: 2024-01-14
+                  </motion.div>
                 </motion.div>
               )}
 
