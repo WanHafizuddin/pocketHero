@@ -11,12 +11,12 @@
   --emerald: #10b981;
   --rose: #f43f5e;
   --amber: #f59e0b;
-  --indigo-soft: #e0e7ff;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  /* Slightly rounder */
-  --radius-lg: 24px;
-  /* Slightly rounder */
+  --indigo-soft: #eef2ff;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  /* Premium roundness */
+  --radius-lg: 32px;
+  /* Premium roundness */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -49,13 +49,15 @@ body {
   width: 100%;
   max-width: 390px;
   /* Standard iPhone 14/15 width */
-  height: min(844px, 95vh);
-  /* Standard iPhone height, capped at 95% viewport height */
+  height: min(800px, 90vh);
+  /* Slightly shorter for better laptop view */
   background-color: var(--surface);
   border-radius: 48px;
-  /* Rounder corners for the device */
   overflow: hidden;
-  box-shadow: 0 0 0 14px #1e293b, 0 32px 64px -16px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 0 12px #1e293b,
+    0 0 0 15px #334155,
+    0 32px 64px -16px rgba(0, 0, 0, 0.6);
   position: relative;
   display: flex;
   flex-direction: column;

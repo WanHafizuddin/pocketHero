@@ -107,40 +107,42 @@ function App() {
             <div style={{ padding: '0 24px 100px 24px' }}>
               {/* Balance Card */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.02 }}
                 className="glass"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-                  padding: '24px',
-                  borderRadius: '24px',
+                  background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                  padding: '28px',
+                  borderRadius: '32px',
                   color: 'white',
-                  marginBottom: '24px',
-                  boxShadow: '0 10px 20px -5px rgba(99, 102, 241, 0.4)',
+                  marginBottom: '28px',
+                  boxShadow: '0 20px 40px -10px rgba(79, 70, 229, 0.4)',
                   position: 'relative',
                   overflow: 'hidden'
                 }}
               >
-                <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-                <div style={{ opacity: 0.9, fontSize: '14px', marginBottom: '8px' }}>Total Balance ({linkedBanks.length} Banks)</div>
-                <div style={{ fontSize: '32px', fontWeight: 700, marginBottom: '24px' }}>RM {totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                <div style={{ display: 'flex', gap: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <ArrowDownLeft size={16} />
+                <div style={{ position: 'absolute', right: '-30px', top: '-30px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                <div style={{ position: 'absolute', left: '-20px', bottom: '-20px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                <div style={{ opacity: 0.9, fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Total Balance ({linkedBanks.length} Banks)</div>
+                <div style={{ fontSize: '36px', fontWeight: 800, marginBottom: '28px', letterSpacing: '-0.02em' }}>RM {totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div style={{ display: 'flex', gap: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <ArrowDownLeft size={18} />
                     </div>
                     <div>
-                      <div style={{ fontSize: '12px', opacity: 0.8 }}>Income</div>
-                      <div style={{ fontSize: '14px', fontWeight: 600 }}>RM 4,200</div>
+                      <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 600 }}>Income</div>
+                      <div style={{ fontSize: '15px', fontWeight: 700 }}>RM 4,200</div>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <ArrowUpRight size={16} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <ArrowUpRight size={18} />
                     </div>
                     <div>
-                      <div style={{ fontSize: '12px', opacity: 0.8 }}>Expenses</div>
-                      <div style={{ fontSize: '14px', fontWeight: 600 }}>RM 1,850</div>
+                      <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 600 }}>Expenses</div>
+                      <div style={{ fontSize: '15px', fontWeight: 700 }}>RM 1,850</div>
                     </div>
                   </div>
                 </div>
@@ -288,83 +290,114 @@ function App() {
         {activeTab === 'stats' && (
           <motion.div
             key="stats"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 100px 24px', overflowY: 'auto' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 110px 24px', overflowY: 'auto' }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h1 style={{ fontSize: '24px', fontWeight: 700 }}>Spending Analysis</h1>
-              <div style={{ background: '#f1f5f9', padding: '4px', borderRadius: '12px', display: 'flex', gap: '4px' }}>
-                {['weekly', 'monthly'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setStatsType(type)}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      background: statsType === type ? 'white' : 'transparent',
-                      color: statsType === type ? 'var(--primary)' : 'var(--text-muted)',
-                      boxShadow: statsType === type ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
-                      cursor: 'pointer',
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {type}
-                  </button>
-                ))}
+            <div style={{ padding: '24px 0', position: 'sticky', top: 0, background: 'var(--surface)', zIndex: 10, marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em' }}>Analytics</h1>
+                <div style={{ background: 'var(--indigo-soft)', padding: '5px', borderRadius: '16px', display: 'flex', gap: '4px' }}>
+                  {['weekly', 'monthly'].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setStatsType(type)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '12px',
+                        border: 'none',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        background: statsType === type ? 'white' : 'transparent',
+                        color: statsType === type ? 'var(--primary)' : 'var(--text-muted)',
+                        boxShadow: statsType === type ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer',
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>{statsType === 'weekly' ? 'Weekly' : 'Monthly'} Spending (RM)</h3>
-              <div style={{ width: '100%', height: '200px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                    <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                    <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 5 ? 'var(--primary)' : 'var(--indigo-soft)'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '20px' }}>By Category</h3>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ width: '150px', height: '150px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ background: 'white', padding: '24px', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{statsType === 'weekly' ? 'Weekly' : 'Monthly'} Trend</h3>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>RM / Day</div>
+                </div>
+                <div style={{ width: '100%', height: '220px' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        innerRadius={45}
-                        outerRadius={60}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 500 }} />
+                      <Tooltip
+                        cursor={{ fill: '#f8fafc', radius: 8 }}
+                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '12px' }}
+                      />
+                      <Bar dataKey="amount" radius={[8, 8, 8, 8]} barSize={24}>
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={index === 5 ? 'var(--primary)' : 'var(--indigo-soft)'} />
                         ))}
-                      </Pie>
-                    </PieChart>
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div style={{ flex: 1, paddingLeft: '20px' }}>
-                  {pieData.map((item, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color }} />
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)', flex: 1 }}>{item.name}</span>
-                      <span style={{ fontSize: '12px', fontWeight: 600 }}>{Math.round(item.value / 1800 * 100)}%</span>
-                    </div>
-                  ))}
+              </div>
+
+              <div style={{ background: 'white', padding: '24px', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '20px' }}>Spending by Category</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ width: '140px', height: '140px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          innerRadius={45}
+                          outerRadius={65}
+                          paddingAngle={8}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {pieData.map((item, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: item.color }} />
+                        <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, fontWeight: 500 }}>{item.name}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 700 }}>{Math.round(item.value / 1800 * 100)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Added a recommendation card for extra "wow" */}
+              <div style={{
+                background: 'linear-gradient(135deg, #10b98120 0%, #05966910 100%)',
+                padding: '20px',
+                borderRadius: '24px',
+                border: '1px solid #10b98130',
+                display: 'flex',
+                gap: '16px',
+                alignItems: 'center'
+              }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--emerald)', boxShadow: '0 4px 10px rgba(16, 185, 129, 0.1)' }}>
+                  <TrendingUp size={24} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '14px', color: '#065f46' }}>Saving Opportunity</div>
+                  <div style={{ fontSize: '12px', color: '#047857' }}>Switching to home-cooked meals could save you ~RM250 this month.</div>
                 </div>
               </div>
             </div>
@@ -375,51 +408,67 @@ function App() {
         {activeTab === 'history' && (
           <motion.div
             key="history"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 100px 24px', overflowY: 'auto' }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 110px 24px', overflowY: 'auto' }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h1 style={{ fontSize: '24px', fontWeight: 700 }}>History</h1>
-              <div style={{ padding: '8px', borderRadius: '12px', background: '#f1f5f9' }}>
-                <Search size={20} color="var(--text-muted)" />
+            <div style={{ padding: '24px 0', position: 'sticky', top: 0, background: 'var(--surface)', zIndex: 10, marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em' }}>Activity</h1>
+                <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#f1f5f9', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
+                  <Search size={22} />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px' }}>
-              {['All', 'Food', 'Transport', 'Rent', 'Shopping'].map((cat, i) => (
-                <div key={i} style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  background: i === 0 ? 'var(--primary)' : 'white',
-                  color: i === 0 ? 'white' : 'var(--text-muted)',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  border: '1px solid #f1f5f9',
-                  whiteSpace: 'nowrap'
-                }}>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '28px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+              {['All', 'Food', 'Transport', 'Rent', 'Shopping', 'Health', 'Travel'].map((cat, i) => (
+                <motion.div
+                  key={i}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '16px',
+                    background: i === 0 ? 'var(--primary)' : 'white',
+                    color: i === 0 ? 'white' : 'var(--text-muted)',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    border: '1px solid #f1f5f9',
+                    boxShadow: i === 0 ? '0 4px 12px rgba(99, 102, 241, 0.25)' : 'none',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer'
+                  }}
+                >
                   {cat}
-                </div>
+                </motion.div>
               ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               {['Today', 'Yesterday'].map((day, i) => (
                 <div key={i}>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{day}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {[1, 2, 3, 4, 5].map((_, j) => (
-                      <div key={j} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <ShoppingBag size={18} color="var(--text-muted)" />
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{day}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {[
+                      { name: 'Grab Food', icon: <Coffee size={20} />, time: '12:45 PM', amount: '-RM 32.00', color: '#fef3c7', iconCol: '#d97706' },
+                      { name: 'Aeon Big', icon: <ShoppingBag size={20} />, time: '10:30 AM', amount: '-RM 156.40', color: '#dcfce7', iconCol: '#16a34a' },
+                      { name: 'Petronas', icon: <Car size={20} />, time: '08:15 AM', amount: '-RM 60.00', color: '#e0f2fe', iconCol: '#0284c7' },
+                    ].map((item, j) => (
+                      <motion.div
+                        key={j}
+                        whileHover={{ x: 4 }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'white', padding: '12px', borderRadius: '20px', border: '1px solid #f8fafc' }}
+                      >
+                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: item.color, display: 'flex', justifyContent: 'center', alignItems: 'center', color: item.iconCol }}>
+                          {item.icon}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 600, fontSize: '14px' }}>Aeon Big Market</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>10:30 AM</div>
+                          <div style={{ fontWeight: 700, fontSize: '15px' }}>{item.name}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{item.time}</div>
                         </div>
-                        <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--rose)' }}>-RM 45.00</div>
-                      </div>
+                        <div style={{ fontWeight: 800, fontSize: '15px', color: 'var(--rose)' }}>{item.amount}</div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
@@ -431,84 +480,109 @@ function App() {
         {activeTab === 'profile' && (
           <motion.div
             key="profile"
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 100px 24px', overflowY: 'auto' }}
+            exit={{ opacity: 0, y: 20 }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 24px 110px 24px', overflowY: 'auto' }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', marginBottom: '32px' }}>
-              <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '40px', marginBottom: '40px' }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                style={{ position: 'relative' }}
+              >
                 <div style={{
-                  width: '100px',
-                  height: '100px',
-                  borderRadius: '32px',
-                  background: 'linear-gradient(135deg, var(--indigo-soft), #ffffff)',
+                  width: '110px',
+                  height: '110px',
+                  borderRadius: '36px',
+                  background: 'linear-gradient(135deg, #eef2ff 0%, #ffffff 100%)',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   color: 'var(--primary)',
                   border: '4px solid white',
-                  boxShadow: '0 8px 16px rgba(0,0,0,0.05)'
+                  boxShadow: '0 12px 24px rgba(0,0,0,0.06)'
                 }}>
-                  <User size={48} />
+                  <User size={54} />
                 </div>
                 <div style={{
                   position: 'absolute',
                   bottom: '-4px',
                   right: '-4px',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '12px',
                   background: 'var(--primary)',
                   border: '3px solid white',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  color: 'white'
+                  color: 'white',
+                  boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)'
                 }}>
-                  <Plus size={16} />
+                  <Plus size={18} />
                 </div>
-              </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '16px' }}>Wan Hafizuddin</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>hafiz@glowcare.com</p>
+              </motion.div>
+              <h2 style={{ fontSize: '24px', fontWeight: 800, marginTop: '20px', letterSpacing: '-0.02em' }}>Wan Hafizuddin</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 500 }}>hafiz@glowcare.com</p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {[
-                { label: 'Account Settings', icon: <User size={20} /> },
-                { label: 'Payment Methods', icon: <CreditCard size={20} /> },
-                { label: 'App Notifications', icon: <Search size={20} /> },
-                { label: 'Security', icon: <Wallet size={20} /> },
-                { label: 'Help Center', icon: <X size={20} /> },
+                { label: 'Account Settings', icon: <User size={20} />, color: '#eef2ff' },
+                { label: 'Payment Methods', icon: <CreditCard size={20} />, color: '#ecfdf5' },
+                { label: 'Security & Privacy', icon: <Wallet size={20} />, color: '#fff7ed' },
+                { label: 'Help & Support', icon: <X size={20} />, color: '#fef2f2' },
               ].map((item, i) => (
-                <div key={i} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '16px',
-                  background: '#f8fafc',
-                  borderRadius: '16px',
-                  cursor: 'pointer'
-                }}>
-                  <div style={{ color: 'var(--primary)' }}>{item.icon}</div>
-                  <span style={{ flex: 1, fontWeight: 600, fontSize: '14px' }}>{item.label}</span>
-                  <div style={{ color: 'var(--text-muted)' }}>›</div>
-                </div>
+                <motion.div
+                  key={i}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '18px',
+                    background: 'white',
+                    borderRadius: '24px',
+                    border: '1px solid #f1f5f9',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    background: item.color,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: 'var(--primary)'
+                  }}>
+                    {item.icon}
+                  </div>
+                  <span style={{ flex: 1, fontWeight: 700, fontSize: '15px' }}>{item.label}</span>
+                  <div style={{ color: '#cbd5e1', fontWeight: 800 }}>›</div>
+                </motion.div>
               ))}
             </div>
 
-            <button style={{
-              marginTop: '24px',
-              padding: '16px',
-              borderRadius: '16px',
-              border: '1px solid #fee2e2',
-              background: '#fef2f2',
-              color: 'var(--rose)',
-              fontWeight: 700,
-              fontSize: '14px'
-            }}>
-              Log Out
-            </button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              style={{
+                marginTop: '32px',
+                padding: '18px',
+                borderRadius: '24px',
+                border: 'none',
+                background: '#fef2f2',
+                color: 'var(--rose)',
+                fontWeight: 800,
+                fontSize: '15px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Sign Out
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -729,50 +803,55 @@ function App() {
         position: 'absolute',
         bottom: '0',
         width: '100%',
-        height: '90px',
-        background: 'white',
-        borderTop: '1px solid #f1f5f9',
+        height: '100px',
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderTop: '1px solid rgba(241, 245, 249, 0.8)',
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        paddingBottom: '20px',
-        zIndex: 50
+        paddingBottom: '30px',
+        zIndex: 50,
+        boxShadow: '0 -10px 40px rgba(0,0,0,0.03)'
       }}>
-        <div onClick={() => setActiveTab('dashboard')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: activeTab === 'dashboard' ? 'var(--primary)' : 'var(--text-muted)' }}>
-          <LayoutDashboard size={24} />
-          <span style={{ fontSize: '10px', fontWeight: 600 }}>Home</span>
+        <div onClick={() => setActiveTab('dashboard')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer', color: activeTab === 'dashboard' ? 'var(--primary)' : '#94a3b8', transition: 'all 0.3s ease' }}>
+          <LayoutDashboard size={22} strokeWidth={activeTab === 'dashboard' ? 2.5 : 2} />
+          <span style={{ fontSize: '11px', fontWeight: 800 }}>Home</span>
         </div>
-        <div onClick={() => setActiveTab('stats')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: activeTab === 'stats' ? 'var(--primary)' : 'var(--text-muted)' }}>
-          <ChartIcon size={24} />
-          <span style={{ fontSize: '10px', fontWeight: 600 }}>Stats</span>
+        <div onClick={() => setActiveTab('stats')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer', color: activeTab === 'stats' ? 'var(--primary)' : '#94a3b8', transition: 'all 0.3s ease' }}>
+          <ChartIcon size={22} strokeWidth={activeTab === 'stats' ? 2.5 : 2} />
+          <span style={{ fontSize: '11px', fontWeight: 800 }}>Stats</span>
         </div>
 
-        <div
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setShowAddModal(true)}
           style={{
-            marginTop: '-50px',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'var(--primary)',
+            marginTop: '-45px',
+            width: '60px',
+            height: '60px',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
             color: 'white',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
+            boxShadow: '0 12px 24px rgba(79, 70, 229, 0.4)',
             cursor: 'pointer'
           }}
         >
-          <Plus size={32} />
-        </div>
+          <Plus size={32} strokeWidth={3} />
+        </motion.div>
 
-        <div onClick={() => setActiveTab('history')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: activeTab === 'history' ? 'var(--primary)' : 'var(--text-muted)' }}>
-          <History size={24} />
-          <span style={{ fontSize: '10px', fontWeight: 600 }}>History</span>
+        <div onClick={() => setActiveTab('history')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer', color: activeTab === 'history' ? 'var(--primary)' : '#94a3b8', transition: 'all 0.3s ease' }}>
+          <History size={22} strokeWidth={activeTab === 'history' ? 2.5 : 2} />
+          <span style={{ fontSize: '11px', fontWeight: 800 }}>History</span>
         </div>
-        <div onClick={() => setActiveTab('profile')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: activeTab === 'profile' ? 'var(--primary)' : 'var(--text-muted)' }}>
-          <User size={24} />
-          <span style={{ fontSize: '10px', fontWeight: 600 }}>Account</span>
+        <div onClick={() => setActiveTab('profile')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer', color: activeTab === 'profile' ? 'var(--primary)' : '#94a3b8', transition: 'all 0.3s ease' }}>
+          <User size={22} strokeWidth={activeTab === 'profile' ? 2.5 : 2} />
+          <span style={{ fontSize: '11px', fontWeight: 800 }}>Account</span>
         </div>
       </nav>
 
