@@ -17,15 +17,14 @@ import {
   Coffee,
   Car,
   Lightbulb,
-  Building2,
-  CheckCircle2,
   Scan,
   Camera,
   Gift,
   HeartPulse,
   Gamepad2,
   Sparkles,
-  Zap
+  Zap,
+  CheckCircle2
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
@@ -55,28 +54,46 @@ const pieData = [
   { name: 'Rent', value: 800, color: '#f43f5e' },
 ];
 
-const banks = [
-  { name: 'Maybank', color: '#ffcc00', balance: '12,450.80' },
-  { name: 'CIMB Bank', color: '#ff0000', balance: '5,200.00' },
-  { name: 'RHB Bank', color: '#003399', balance: '1,800.00' },
-  { name: 'Public Bank', color: '#cc0000', balance: '3,100.00' },
-];
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showBankModal, setShowBankModal] = useState(false);
-  const [linkedBanks, setLinkedBanks] = useState([banks[0]]);
+  const [transactionType, setTransactionType] = useState('expense'); // 'expense' or 'income'
   const [statsType, setStatsType] = useState('weekly');
   const [isScanning, setIsScanning] = useState(false);
+
+  // New Notification Detection States
+  const [showPushNotification, setShowPushNotification] = useState(false);
+  const [notificationMsg, setNotificationMsg] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractedData, setExtractedData] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const [transactions, setTransactions] = useState([
+    { id: 1, name: 'Grab Food', cat: 'Food & Drinks', time: '2:30 PM', amount: '-RM 24.50', icon: <Coffee size={20} /> },
+    { id: 2, name: 'Petronas Fuel', cat: 'Transport', time: '11:20 AM', amount: '-RM 50.00', icon: <Car size={20} /> },
+    { id: 3, name: 'Salary Deposit', cat: 'Job', time: 'Yesterday', amount: '+RM 3,200.00', icon: <CreditCard size={20} />, pos: true },
+  ]);
 
   // Prevention of background scroll logic
   useEffect(() => {
     // Since body is already overflow: hidden, we just manage the internal container if needed
     // But the current structure with flex: 1 and overflow-y: auto should be sufficient.
-  }, [showAddModal, showBankModal]);
+  }, [showAddModal]);
 
-  const totalBalance = linkedBanks.reduce((acc, bank) => acc + parseFloat(bank.balance.replace(',', '')), 0);
+  // Calculate total balance dynamically from transactions
+  const calculateBalance = () => {
+    const initialBalance = 12450.80;
+    const transactionTotal = transactions.reduce((sum, transaction) => {
+      const amountStr = transaction.amount.replace(/[^\d.-]/g, ''); // Remove RM, spaces, commas
+      const amount = parseFloat(amountStr) || 0;
+      return sum + amount;
+    }, 0);
+    return initialBalance + transactionTotal;
+  };
+
+  const totalBalance = calculateBalance();
 
   return (
     <div className="mobile-container">
@@ -90,8 +107,92 @@ function App() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'relative' }}
           >
+            {/* Simulation Trigger (Floating for Demo) */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setNotificationMsg("Maybank: RM 120.00 spent at Zara Mid Valley");
+                setShowPushNotification(true);
+                setTimeout(() => setShowPushNotification(false), 5000);
+              }}
+              style={{
+                position: 'fixed',
+                top: '55px',
+                right: '30px',
+                zIndex: 1000,
+                background: 'rgba(255,255,255,0.8)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '8px 12px',
+                fontSize: '11px',
+                fontWeight: 700,
+                color: 'var(--primary)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                cursor: 'pointer'
+              }}
+            >
+              Simulate Bank Alert
+            </motion.button>
+
+            {/* Simulated Push Notification Alert */}
+            <AnimatePresence>
+              {showPushNotification && (
+                <motion.div
+                  initial={{ y: -100, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -100, opacity: 0 }}
+                  onClick={() => {
+                    setShowPushNotification(false);
+                    setIsExtracting(true);
+                    // Mock extraction delay
+                    setTimeout(() => {
+                      setExtractedData({
+                        merchant: 'Zara Mid Valley',
+                        amount: '120.00',
+                        bank: 'Maybank',
+                        category: 'Shopping'
+                      });
+                      setIsExtracting(false);
+                      setShowConfirmModal(true);
+                    }, 2500);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '20px',
+                    right: '20px',
+                    zIndex: 2000,
+                    background: 'rgba(0,0,0,0.85)',
+                    backdropFilter: 'blur(20px)',
+                    padding: '16px',
+                    borderRadius: '24px',
+                    color: 'white',
+                    display: 'flex',
+                    gap: '12px',
+                    alignItems: 'center',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                  }}
+                >
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Zap size={22} color="white" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-light)' }}>HEROPOCKET • JUST NOW</span>
+                      <span style={{ fontSize: '10px', opacity: 0.5 }}>now</span>
+                    </div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '2px' }}>New Transaction Detected</div>
+                    <div style={{ fontSize: '13px', opacity: 0.8 }}>{notificationMsg}</div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             {/* Header */}
             <header style={{ padding: '0 24px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -135,7 +236,7 @@ function App() {
               >
                 <div style={{ position: 'absolute', right: '-30px', top: '-30px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
                 <div style={{ position: 'absolute', left: '-20px', bottom: '-20px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-                <div style={{ opacity: 0.9, fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Total Balance ({linkedBanks.length} Banks)</div>
+                <div style={{ opacity: 0.9, fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Total Balance</div>
                 <div style={{ fontSize: '36px', fontWeight: 800, marginBottom: '28px', letterSpacing: '-0.02em' }}>RM {totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <div style={{ display: 'flex', gap: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -263,43 +364,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Linked Banks Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 650 }}>Linked Banks</h3>
-                  <button
-                    onClick={() => setShowBankModal(true)}
-                    style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                  >
-                    <Plus size={16} /> Link Bank
-                  </button>
-                </div>
-                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
-                  {linkedBanks.map((bank, i) => (
-                    <motion.div
-                      key={i}
-                      whileTap={{ scale: 0.95 }}
-                      style={{
-                        flexShrink: 0,
-                        width: '140px',
-                        background: 'white',
-                        padding: '16px',
-                        borderRadius: '20px',
-                        border: '1px solid #e2e8f0',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: bank.color, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
-                        <Building2 size={18} />
-                      </div>
-                      <div style={{ fontSize: '13px', fontWeight: 600 }}>{bank.name}</div>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--primary)' }}>RM {bank.balance}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Insights Section */}
               <div style={{
@@ -342,12 +407,8 @@ function App() {
                   <button style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '14px' }}>See All</button>
                 </div>
 
-                {[
-                  { name: 'Grab Food', cat: 'Food & Drinks', time: '2:30 PM', amount: '-RM 24.50', icon: <Coffee size={20} /> },
-                  { name: 'Petronas Fuel', cat: 'Transport', time: '11:20 AM', amount: '-RM 50.00', icon: <Car size={20} /> },
-                  { name: 'Salary Deposit', cat: 'Job', time: 'Yesterday', amount: '+RM 3,200.00', icon: <CreditCard size={20} />, pos: true },
-                ].map((item, i) => (
-                  <div key={i} style={{
+                {transactions.map((item) => (
+                  <div key={item.id} style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '16px',
@@ -537,33 +598,27 @@ function App() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              {['Today', 'Yesterday'].map((day, i) => (
-                <div key={i}>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{day}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {[
-                      { name: 'Grab Food', icon: <Coffee size={20} />, time: '12:45 PM', amount: '-RM 32.00', color: '#fef3c7', iconCol: '#d97706' },
-                      { name: 'Aeon Big', icon: <ShoppingBag size={20} />, time: '10:30 AM', amount: '-RM 156.40', color: '#dcfce7', iconCol: '#16a34a' },
-                      { name: 'Petronas', icon: <Car size={20} />, time: '08:15 AM', amount: '-RM 60.00', color: '#e0f2fe', iconCol: '#0284c7' },
-                    ].map((item, j) => (
-                      <motion.div
-                        key={j}
-                        whileHover={{ x: 4 }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'white', padding: '12px', borderRadius: '20px', border: '1px solid #f8fafc' }}
-                      >
-                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: item.color, display: 'flex', justifyContent: 'center', alignItems: 'center', color: item.iconCol }}>
-                          {item.icon}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 700, fontSize: '15px' }}>{item.name}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{item.time}</div>
-                        </div>
-                        <div style={{ fontWeight: 800, fontSize: '15px', color: 'var(--rose)' }}>{item.amount}</div>
-                      </motion.div>
-                    ))}
-                  </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Activities</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {transactions.map((item, j) => (
+                    <motion.div
+                      key={item.id}
+                      whileHover={{ x: 4 }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'white', padding: '12px', borderRadius: '20px', border: '1px solid #f8fafc' }}
+                    >
+                      <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: item.pos ? '#dcfce7' : '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'center', color: item.pos ? '#16a34a' : 'var(--text-muted)' }}>
+                        {item.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: '15px' }}>{item.name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{item.time}</div>
+                      </div>
+                      <div style={{ fontWeight: 800, fontSize: '15px', color: item.pos ? 'var(--emerald)' : 'var(--rose)' }}>{item.amount}</div>
+                    </motion.div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </motion.div>
         )}
@@ -715,33 +770,88 @@ function App() {
               onClick={e => e.stopPropagation()}
             >
               <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px auto' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Add Expense</h2>
+
+              {/* Transaction Type Selector */}
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setIsScanning(true);
-                    setTimeout(() => setIsScanning(false), 3000);
-                  }}
-                  className="ai-pulse"
+                  onClick={() => setTransactionType('expense')}
                   style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: '16px',
+                    border: transactionType === 'expense' ? '2px solid var(--rose)' : '1px solid #e2e8f0',
+                    background: transactionType === 'expense' ? '#fff1f2' : 'white',
+                    color: transactionType === 'expense' ? 'var(--rose)' : 'var(--text-muted)',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 18px',
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                    color: 'white',
-                    border: 'none',
-                    fontWeight: 800,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    boxShadow: '0 8px 16px -4px rgba(168, 85, 247, 0.3)'
+                    justifyContent: 'center',
+                    gap: '8px'
                   }}
                 >
-                  <Scan size={18} /> {isScanning ? 'AI Extracting...' : 'AI Scan Receipt'}
+                  <ArrowUpRight size={18} />
+                  Expense
                 </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setTransactionType('income')}
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: '16px',
+                    border: transactionType === 'income' ? '2px solid var(--emerald)' : '1px solid #e2e8f0',
+                    background: transactionType === 'income' ? '#f0fdf4' : 'white',
+                    color: transactionType === 'income' ? 'var(--emerald)' : 'var(--text-muted)',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <ArrowDownLeft size={18} />
+                  Income
+                </motion.button>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: 700 }}>
+                  Add {transactionType === 'expense' ? 'Expense' : 'Income'}
+                </h2>
+                {transactionType === 'expense' && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setIsScanning(true);
+                      setTimeout(() => setIsScanning(false), 3000);
+                    }}
+                    className="ai-pulse"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 18px',
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                      color: 'white',
+                      border: 'none',
+                      fontWeight: 800,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      boxShadow: '0 8px 16px -4px rgba(168, 85, 247, 0.3)'
+                    }}
+                  >
+                    <Scan size={18} /> {isScanning ? 'AI Extracting...' : 'AI Scan Receipt'}
+                  </motion.button>
+                )}
               </div>
 
               {isScanning && (
@@ -815,54 +925,143 @@ function App() {
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>Amount</label>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                  <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--primary)' }}>RM</span>
-                  <input type="text" placeholder="0.00" autoFocus style={{ width: '100%', fontSize: '32px', fontWeight: 700, border: 'none', outline: 'none', color: 'var(--primary)' }} />
+                  <span style={{
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    color: transactionType === 'expense' ? 'var(--rose)' : 'var(--emerald)'
+                  }}>
+                    {transactionType === 'expense' ? '-' : '+'}RM
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="0.00"
+                    autoFocus
+                    style={{
+                      width: '100%',
+                      fontSize: '32px',
+                      fontWeight: 700,
+                      border: 'none',
+                      outline: 'none',
+                      color: transactionType === 'expense' ? 'var(--rose)' : 'var(--emerald)'
+                    }}
+                  />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
-                {[
-                  { icon: <ShoppingBag size={20} />, label: 'Shop' },
-                  { icon: <Coffee size={20} />, label: 'Food' },
-                  { icon: <Car size={20} />, label: 'Travel' },
-                  { icon: <Gamepad2 size={20} />, label: 'Play' },
-                  { icon: <HeartPulse size={20} />, label: 'Health' },
-                  { icon: <Gift size={20} />, label: 'Gifts' },
-                  { icon: <Search size={20} />, label: 'Other' },
-                ].map((cat, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
-                      {cat.icon}
+              {transactionType === 'expense' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+                  {[
+                    { icon: <ShoppingBag size={20} />, label: 'Shop' },
+                    { icon: <Coffee size={20} />, label: 'Food' },
+                    { icon: <Car size={20} />, label: 'Travel' },
+                    { icon: <Gamepad2 size={20} />, label: 'Play' },
+                    { icon: <HeartPulse size={20} />, label: 'Health' },
+                    { icon: <Gift size={20} />, label: 'Gifts' },
+                    { icon: <Search size={20} />, label: 'Other' },
+                  ].map((cat, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#f8fafc', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)' }}>
+                        {cat.icon}
+                      </div>
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{cat.label}</span>
                     </div>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{cat.label}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
-              <button className="btn-primary" style={{ width: '100%' }} onClick={() => setShowAddModal(false)}>Save Transaction</button>
+              <button
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  background: transactionType === 'expense'
+                    ? 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)'
+                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: transactionType === 'expense'
+                    ? '0 8px 16px rgba(244, 63, 94, 0.3)'
+                    : '0 8px 16px rgba(16, 185, 129, 0.3)'
+                }}
+                onClick={() => {
+                  const inputValue = document.querySelector('input[placeholder="0.00"]').value || '0.00';
+                  const newTx = {
+                    id: Date.now(),
+                    name: transactionType === 'expense' ? 'Manual Entry' : 'Manual Income',
+                    cat: transactionType === 'expense' ? 'Other' : 'Job',
+                    time: 'Just now',
+                    amount: `${transactionType === 'expense' ? '-' : '+'}RM ${inputValue}`,
+                    icon: transactionType === 'expense' ? <ShoppingBag size={20} /> : <CreditCard size={20} />,
+                    pos: transactionType === 'income'
+                  };
+                  setTransactions([newTx, ...transactions]);
+                  setShowAddModal(false);
+                }}>
+                Save {transactionType === 'expense' ? 'Expense' : 'Income'}
+              </button>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Linked Banks Modal */}
+      {/* AI Extraction Loading Overlay */}
       <AnimatePresence>
-        {showBankModal && (
+        {isExtracting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(255,255,255,0.95)',
+              zIndex: 3000,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '40px'
+            }}
+          >
+            <div className="ai-gradient ai-pulse" style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '24px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: 'white',
+              marginBottom: '24px',
+              boxShadow: '0 20px 40px rgba(168, 85, 247, 0.4)'
+            }}>
+              <Sparkles size={40} />
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', textAlign: 'center' }}>AI Extraction</h2>
+            <p style={{ color: 'var(--text-muted)', textAlign: 'center', fontSize: '14px' }}>
+              Analyzing notification from <span style={{ color: 'var(--primary)', fontWeight: 700 }}>Maybank</span>...
+            </p>
+
+            <div style={{ marginTop: '40px', width: '100%', maxWidth: '200px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+              <motion.div
+                animate={{ x: [-200, 200] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, transparent, #a855f7, transparent)' }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmModal && extractedData && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0,0,0,0.5)',
-                zIndex: 100,
-              }}
-              onClick={() => setShowBankModal(false)}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2500 }}
+              onClick={() => setShowConfirmModal(false)}
             />
             <motion.div
               initial={{ y: '100%' }}
@@ -871,74 +1070,94 @@ function App() {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               style={{
                 width: '100%',
-                maxHeight: '80%',
                 background: 'white',
                 borderTopLeftRadius: '32px',
                 borderTopRightRadius: '32px',
                 padding: '32px 24px 44px 24px',
                 position: 'absolute',
                 bottom: 0,
-                zIndex: 101,
-                overflowY: 'auto'
+                zIndex: 2600
               }}
-              onClick={e => e.stopPropagation()}
             >
               <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px auto' }} />
-              <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Link Bank Account</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px' }}>Connect your accounts to automatically summarize and track your spending in Malaysia.</p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {banks.map((bank, i) => {
-                  const isLinked = linkedBanks.some(b => b.name === bank.name);
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => {
-                        if (!isLinked) {
-                          setLinkedBanks([...linkedBanks, bank]);
-                        } else {
-                          setLinkedBanks(linkedBanks.filter(b => b.name !== bank.name));
-                        }
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '16px',
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '16px',
-                        cursor: 'pointer',
-                        border: isLinked ? '2px solid var(--primary)' : '2px solid transparent'
-                      }}
-                    >
-                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: bank.color, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
-                        <Building2 size={24} />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 700, fontSize: '15px' }}>{bank.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Online Banking</div>
-                      </div>
-                      {isLinked ? (
-                        <CheckCircle2 size={24} color="var(--primary)" />
-                      ) : (
-                        <Plus size={24} color="var(--text-muted)" />
-                      )}
-                    </div>
-                  );
-                })}
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '20px',
+                  background: '#f0fdf4',
+                  color: '#16a34a',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '0 auto 16px auto'
+                }}>
+                  <CheckCircle2 size={32} />
+                </div>
+                <h2 style={{ fontSize: '22px', fontWeight: 800 }}>Transaction Detected</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>AI has extracted the following details</p>
               </div>
 
-              <button
-                className="btn-primary"
-                style={{ width: '100%', marginTop: '32px' }}
-                onClick={() => setShowBankModal(false)}
-              >
-                Confirm Connections
-              </button>
+              <div style={{
+                background: '#f8fafc',
+                borderRadius: '24px',
+                padding: '24px',
+                marginBottom: '32px',
+                border: '1px solid #f1f5f9'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Merchant</span>
+                  <span style={{ fontWeight: 700 }}>{extractedData.merchant}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Amount</span>
+                  <span style={{ fontWeight: 800, color: 'var(--rose)', fontSize: '18px' }}>RM {extractedData.amount}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Category</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ShoppingBag size={14} color="var(--primary)" />
+                    <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{extractedData.category}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Bank</span>
+                  <span style={{ fontWeight: 600 }}>{extractedData.bank}</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'white', fontWeight: 700, cursor: 'pointer' }}
+                  onClick={() => setShowConfirmModal(false)}
+                >
+                  Edit Details
+                </button>
+                <button
+                  className="btn-primary"
+                  style={{ flex: 2 }}
+                  onClick={() => {
+                    const newTx = {
+                      id: Date.now(),
+                      name: extractedData.merchant,
+                      cat: extractedData.category,
+                      time: 'Just now',
+                      amount: `-RM ${extractedData.amount}`,
+                      icon: <ShoppingBag size={20} />
+                    };
+                    setTransactions([newTx, ...transactions]);
+                    setShowConfirmModal(false);
+                  }}
+                >
+                  Confirm & Save
+                </button>
+              </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
+
+
 
       {/* Navigation Bar */}
       <nav style={{
@@ -969,7 +1188,10 @@ function App() {
         <motion.div
           whileHover={{ scale: 1.1, rotate: 90 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => setShowAddModal(true)}
+          onClick={() => {
+            setTransactionType('expense');
+            setShowAddModal(true);
+          }}
           style={{
             marginTop: '-45px',
             width: '60px',
