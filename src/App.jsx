@@ -63,12 +63,7 @@ function App() {
   const [statsType, setStatsType] = useState('weekly');
   const [isScanning, setIsScanning] = useState(false);
 
-  // New Notification Detection States
-  const [showPushNotification, setShowPushNotification] = useState(false);
-  const [notificationMsg, setNotificationMsg] = useState('');
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [extractedData, setExtractedData] = useState(null);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
 
   const [transactions, setTransactions] = useState([
     { id: 1, name: 'Grab Food', cat: 'Food & Drinks', time: '2:30 PM', amount: '-RM 24.50', icon: <Coffee size={20} /> },
@@ -109,90 +104,7 @@ function App() {
             exit={{ opacity: 0, x: -20 }}
             style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', position: 'relative' }}
           >
-            {/* Simulation Trigger (Floating for Demo) */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setNotificationMsg("Maybank: RM 120.00 spent at Zara Mid Valley");
-                setShowPushNotification(true);
-                setTimeout(() => setShowPushNotification(false), 5000);
-              }}
-              style={{
-                position: 'fixed',
-                top: '55px',
-                right: '30px',
-                zIndex: 1000,
-                background: 'rgba(255,255,255,0.8)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid #e2e8f0',
-                borderRadius: '12px',
-                padding: '8px 12px',
-                fontSize: '11px',
-                fontWeight: 700,
-                color: 'var(--primary)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                cursor: 'pointer'
-              }}
-            >
-              Simulate Bank Alert
-            </motion.button>
 
-            {/* Simulated Push Notification Alert */}
-            <AnimatePresence>
-              {showPushNotification && (
-                <motion.div
-                  initial={{ y: -100, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -100, opacity: 0 }}
-                  onClick={() => {
-                    setShowPushNotification(false);
-                    setIsExtracting(true);
-                    // Mock extraction delay
-                    setTimeout(() => {
-                      setExtractedData({
-                        merchant: 'Zara Mid Valley',
-                        amount: '120.00',
-                        bank: 'Maybank',
-                        category: 'Shopping'
-                      });
-                      setIsExtracting(false);
-                      setShowConfirmModal(true);
-                    }, 2500);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '20px',
-                    right: '20px',
-                    zIndex: 2000,
-                    background: 'rgba(0,0,0,0.85)',
-                    backdropFilter: 'blur(20px)',
-                    padding: '16px',
-                    borderRadius: '24px',
-                    color: 'white',
-                    display: 'flex',
-                    gap: '12px',
-                    alignItems: 'center',
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                    cursor: 'pointer',
-                    border: '1px solid rgba(255,255,255,0.1)'
-                  }}
-                >
-                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Zap size={22} color="white" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-light)' }}>HEROPOCKET • JUST NOW</span>
-                      <span style={{ fontSize: '10px', opacity: 0.5 }}>now</span>
-                    </div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, marginTop: '2px' }}>New Transaction Detected</div>
-                    <div style={{ fontSize: '13px', opacity: 0.8 }}>{notificationMsg}</div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
             {/* Header */}
             <header style={{ padding: '0 24px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1001,161 +913,10 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* AI Extraction Loading Overlay */}
-      <AnimatePresence>
-        {isExtracting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(255,255,255,0.95)',
-              zIndex: 3000,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '40px'
-            }}
-          >
-            <div className="ai-gradient ai-pulse" style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '24px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: 'white',
-              marginBottom: '24px',
-              boxShadow: '0 20px 40px rgba(168, 85, 247, 0.4)'
-            }}>
-              <Sparkles size={40} />
-            </div>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', textAlign: 'center' }}>AI Extraction</h2>
-            <p style={{ color: 'var(--text-muted)', textAlign: 'center', fontSize: '14px' }}>
-              Analyzing notification from <span style={{ color: 'var(--primary)', fontWeight: 700 }}>Maybank</span>...
-            </p>
 
-            <div style={{ marginTop: '40px', width: '100%', maxWidth: '200px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-              <motion.div
-                animate={{ x: [-200, 200] }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, transparent, #a855f7, transparent)' }}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Confirmation Modal */}
-      <AnimatePresence>
-        {showConfirmModal && extractedData && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2500 }}
-              onClick={() => setShowConfirmModal(false)}
-            />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              style={{
-                width: '100%',
-                background: 'white',
-                borderTopLeftRadius: '32px',
-                borderTopRightRadius: '32px',
-                padding: '32px 24px 44px 24px',
-                position: 'absolute',
-                bottom: 0,
-                zIndex: 2600
-              }}
-            >
-              <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px auto' }} />
-              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '20px',
-                  background: '#f0fdf4',
-                  color: '#16a34a',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  margin: '0 auto 16px auto'
-                }}>
-                  <CheckCircle2 size={32} />
-                </div>
-                <h2 style={{ fontSize: '22px', fontWeight: 800 }}>Transaction Detected</h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>AI has extracted the following details</p>
-              </div>
 
-              <div style={{
-                background: '#f8fafc',
-                borderRadius: '24px',
-                padding: '24px',
-                marginBottom: '32px',
-                border: '1px solid #f1f5f9'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Merchant</span>
-                  <span style={{ fontWeight: 700 }}>{extractedData.merchant}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Amount</span>
-                  <span style={{ fontWeight: 800, color: 'var(--rose)', fontSize: '18px' }}>RM {extractedData.amount}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Category</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <ShoppingBag size={14} color="var(--primary)" />
-                    <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{extractedData.category}</span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Bank</span>
-                  <span style={{ fontWeight: 600 }}>{extractedData.bank}</span>
-                </div>
-              </div>
 
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'white', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => setShowConfirmModal(false)}
-                >
-                  Edit Details
-                </button>
-                <button
-                  className="btn-primary"
-                  style={{ flex: 2 }}
-                  onClick={() => {
-                    const newTx = {
-                      id: Date.now(),
-                      name: extractedData.merchant,
-                      cat: extractedData.category,
-                      time: 'Just now',
-                      amount: `-RM ${extractedData.amount}`,
-                      icon: <ShoppingBag size={20} />
-                    };
-                    setTransactions([newTx, ...transactions]);
-                    setShowConfirmModal(false);
-                  }}
-                >
-                  Confirm & Save
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
 
 
