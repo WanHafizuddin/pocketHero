@@ -24,7 +24,9 @@ import {
   Gamepad2,
   Sparkles,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  Trash2,
+  Edit2
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
@@ -62,6 +64,11 @@ function App() {
   const [transactionType, setTransactionType] = useState('expense'); // 'expense' or 'income'
   const [statsType, setStatsType] = useState('weekly');
   const [isScanning, setIsScanning] = useState(false);
+
+  // Edit and Delete states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
 
 
@@ -320,13 +327,20 @@ function App() {
                 </div>
 
                 {transactions.map((item) => (
-                  <div key={item.id} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    padding: '12px 0',
-                    borderBottom: '1px solid #f1f5f9'
-                  }}>
+                  <motion.div
+                    key={item.id}
+                    whileHover={{ backgroundColor: '#f8fafc' }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px',
+                      padding: '12px',
+                      borderBottom: '1px solid #f1f5f9',
+                      borderRadius: '12px',
+                      position: 'relative',
+                      cursor: 'pointer'
+                    }}
+                  >
                     <div style={{
                       width: '48px',
                       height: '48px',
@@ -344,7 +358,57 @@ function App() {
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{item.cat} • {item.time}</div>
                     </div>
                     <div style={{ fontWeight: 700, color: item.pos ? 'var(--emerald)' : 'var(--rose)' }}>{item.amount}</div>
-                  </div>
+
+                    {/* Edit and Delete buttons */}
+                    <div style={{ display: 'flex', gap: '8px', marginLeft: '8px' }}>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTransaction(item);
+                          setShowEditModal(true);
+                        }}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '10px',
+                          border: 'none',
+                          background: '#eef2ff',
+                          color: 'var(--primary)',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTransaction(item);
+                          setShowDeleteConfirm(true);
+                        }}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '10px',
+                          border: 'none',
+                          background: '#fef2f2',
+                          color: 'var(--rose)',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </motion.button>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -527,6 +591,56 @@ function App() {
                         <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>{item.time}</div>
                       </div>
                       <div style={{ fontWeight: 800, fontSize: '15px', color: item.pos ? 'var(--emerald)' : 'var(--rose)' }}>{item.amount}</div>
+
+                      {/* Edit and Delete buttons */}
+                      <div style={{ display: 'flex', gap: '8px', marginLeft: '8px' }}>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTransaction(item);
+                            setShowEditModal(true);
+                          }}
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '10px',
+                            border: 'none',
+                            background: '#eef2ff',
+                            color: 'var(--primary)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Edit2 size={16} />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTransaction(item);
+                            setShowDeleteConfirm(true);
+                          }}
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '10px',
+                            border: 'none',
+                            background: '#fef2f2',
+                            color: 'var(--rose)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </motion.button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
@@ -908,6 +1022,255 @@ function App() {
                 }}>
                 Save {transactionType === 'expense' ? 'Expense' : 'Income'}
               </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Transaction Modal */}
+      <AnimatePresence>
+        {showEditModal && selectedTransaction && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                zIndex: 100,
+              }}
+              onClick={() => setShowEditModal(false)}
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              style={{
+                width: '100%',
+                background: 'white',
+                borderTopLeftRadius: '32px',
+                borderTopRightRadius: '32px',
+                padding: '32px 24px 44px 24px',
+                position: 'absolute',
+                bottom: 0,
+                zIndex: 101
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 auto 24px auto' }} />
+
+              <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '24px' }}>Edit Transaction</h2>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>Name</label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  defaultValue={selectedTransaction.name}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '16px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>Amount (RM)</label>
+                <input
+                  id="edit-amount"
+                  type="number"
+                  step="0.01"
+                  defaultValue={selectedTransaction.amount.replace(/[^0-9.]/g, '')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '16px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>Category</label>
+                <input
+                  id="edit-category"
+                  type="text"
+                  defaultValue={selectedTransaction.cat}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '16px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  style={{
+                    flex: 1,
+                    padding: '16px',
+                    borderRadius: '16px',
+                    border: '1px solid #e2e8f0',
+                    background: 'white',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontSize: '15px'
+                  }}
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn-primary"
+                  style={{
+                    flex: 2,
+                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                    boxShadow: '0 8px 16px rgba(79, 70, 229, 0.3)'
+                  }}
+                  onClick={() => {
+                    const name = document.getElementById('edit-name').value;
+                    const amount = document.getElementById('edit-amount').value;
+                    const category = document.getElementById('edit-category').value;
+
+                    const updatedTransactions = transactions.map(tx =>
+                      tx.id === selectedTransaction.id
+                        ? {
+                          ...tx,
+                          name: name || tx.name,
+                          cat: category || tx.cat,
+                          amount: `${tx.pos ? '+' : '-'}RM ${amount || tx.amount.replace(/[^0-9.]/g, '')}`
+                        }
+                        : tx
+                    );
+
+                    setTransactions(updatedTransactions);
+                    setShowEditModal(false);
+                    setSelectedTransaction(null);
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && selectedTransaction && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                zIndex: 100,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '24px'
+              }}
+              onClick={() => setShowDeleteConfirm(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                style={{
+                  width: '100%',
+                  maxWidth: '360px',
+                  background: 'white',
+                  borderRadius: '32px',
+                  padding: '32px 24px',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '20px',
+                  background: '#fef2f2',
+                  color: 'var(--rose)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '0 auto 20px auto'
+                }}>
+                  <Trash2 size={32} />
+                </div>
+
+                <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '12px', textAlign: 'center' }}>Delete Transaction?</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', marginBottom: '28px' }}>
+                  Are you sure you want to delete "<strong>{selectedTransaction.name}</strong>"? This action cannot be undone.
+                </p>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      borderRadius: '16px',
+                      border: '1px solid #e2e8f0',
+                      background: 'white',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontSize: '15px'
+                    }}
+                    onClick={() => setShowDeleteConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      borderRadius: '16px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
+                      color: 'white',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      fontSize: '15px',
+                      boxShadow: '0 8px 16px rgba(244, 63, 94, 0.3)'
+                    }}
+                    onClick={() => {
+                      const updatedTransactions = transactions.filter(tx => tx.id !== selectedTransaction.id);
+                      setTransactions(updatedTransactions);
+                      setShowDeleteConfirm(false);
+                      setSelectedTransaction(null);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
